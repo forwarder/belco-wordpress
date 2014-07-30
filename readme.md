@@ -16,5 +16,5 @@ Plugin installeren, hiervoor maken we een symlink naar de repo
 Javascript dist koppelen
 
     rm belco-woocommerce/js/belco.js
-    ln -s ../../belco-client/dist/belco.js belco-woocommerce/js/belco.js
+    ln -s belco-client/dist/belco.js belco-woocommerce/js/belco.js
     
