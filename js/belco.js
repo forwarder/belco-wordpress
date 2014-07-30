@@ -1,0 +1,1 @@
+../../belco-client/dist/belco.js

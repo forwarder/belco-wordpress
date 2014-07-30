@@ -1,0 +1,93 @@
+@font-face {
+  font-family: "forwarder";
+  src:url("fonts/forwarder.eot");
+  src:url("fonts/forwarder.eot?#iefix") format("embedded-opentype"),
+    url("fonts/forwarder.woff") format("woff"),
+    url("fonts/forwarder.ttf") format("truetype"),
+    url("fonts/forwarder.svg#forwarder") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+#adminmenu #toplevel_page_belco .menu-icon-generic div.wp-menu-image:before{
+  font-family:forwarder!important;
+  content:"a";
+  font-size:1.3em!important;
+  color: #ffd140!important;
+}
+
+#adminmenu #toplevel_page_belco .menu-icon-generic.wp-has-current-submenu div.wp-menu-image:before{
+  color: #fff!important;
+}
+
+#adminmenu #toplevel_page_belco a.wp-has-current-submenu.toplevel_page_belco {
+  background: #ffd140!important;
+  color: #fff;
+}
+
+#adminmenu #toplevel_page_belco a.wp-has-current-submenu.current:hover{
+  color: #fff!important;
+}
+
+#adminmenu #toplevel_page_belco a.wp-not-current-submenu:hover{
+  color: #ffd140!important;
+}
+
+#adminmenu #toplevel_page_belco .wp-submenu a:hover {
+  color: #ffd140!important;
+}
+
+#belco_dashboard_widget h3.hndle {
+  background: #ffd140!important;
+  color: #fff!important;
+}
+
+#belco_dashboard_widget h3.hndle:before {
+  font-family:forwarder!important;
+  content:"a\0020";
+  color: #fff!important;
+  font-weight: 100;
+}
+
+#belco_dashboard_widget .handlediv {
+  color: #fff!important;
+}
+
+#wp-admin-bar-belco-status {
+  //background: #ffd140!important;
+  //float: right!important;
+  width: 250px;
+}
+
+#wp-admin-bar-belco-status .ab-empty-item {
+  display: none !important;
+}
+
+#wp-admin-bar-belco-status > .ng-scope:before {
+  font-family:forwarder!important;
+  content:"a";
+  font-size:1.3em!important;
+  color: #ffd140!important;
+}
+
+/*#wp-admin-bar-belco-status a:hover{
+  color: #ffd140!important;
+}*/
+
+#wp-admin-bar-belco-status > span {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 150px;
+  background-color: #444;
+  text-indent: 5px;
+}
+
+#wp-admin-bar-belco-status > span > div > p.available {
+  color: #00ff78;
+}
+
+#wp-admin-bar-belco-status > span > div > p.dnd {
+  color: #ff7800;
+}
