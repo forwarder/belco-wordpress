@@ -1,4 +1,4 @@
-@font-face {
+/*@font-face {
   font-family: "forwarder";
   src:url("fonts/forwarder.eot");
   src:url("fonts/forwarder.eot?#iefix") format("embedded-opentype"),
@@ -8,7 +8,9 @@
   font-weight: normal;
   font-style: normal;
 
-}
+}*/
+
+@import url(https://fontastic.s3.amazonaws.com/fjje4hBQvR29hFSzfxsT65/icons.css);
 
 #adminmenu #toplevel_page_belco .menu-icon-generic div.wp-menu-image:before{
   font-family:forwarder!important;

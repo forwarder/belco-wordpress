@@ -1,0 +1,10 @@
+#belco-click2call {
+	position: absolute;
+	bottom: 0;
+	right: 100px;
+	padding: 15px;
+	width: 200px;
+	text-align: center;
+	background-color: #ffd12e;
+	color: #ffffff;
+}
