@@ -54,22 +54,15 @@ if(!class_exists('WP_Belco'))
 
       // register filters
       
-      add_filter('query_vars', array(&$this, 'query_vars'));
+      add_filter( 'query_vars', array(&$this, 'query_vars') );
+      add_action( 'admin_init', array(&$this, 'admin_init') );
+      add_action( 'admin_menu', array(&$this, 'add_menu') );
+			add_action( 'plugins_loaded', array(&$this, 'enqueue_scripts') );
+      add_action( 'wp_before_admin_bar_render', array(&$this, 'belco_toolbar_menu'), 1 );
       
-      // register actions
-      add_action('admin_init', array(&$this, 'admin_init'));
-      
-      add_action('admin_menu', array(&$this, 'add_menu'));
-			
-			add_action('plugins_loaded', array(&$this, 'enqueue_scripts'));
-      
-      // Register toolbar menu item
-      add_action('wp_before_admin_bar_render', array(&$this, 'belco_toolbar_menu'), 1 );
-      
-      add_action('wp_dashboard_setup', array(&$this, 'add_dashboard_widget'));
-      
-      // register parse request
-      add_action('parse_request', array(&$this, 'belco_parse_request'));
+      //add_action('wp_dashboard_setup', array(&$this, 'add_dashboard_widget'));
+
+      add_action( 'parse_request', array(&$this, 'belco_parse_request') );
     }
 
     /**
@@ -98,6 +91,7 @@ if(!class_exists('WP_Belco'))
 			flush_rewrite_rules();
 
 			delete_option('belco_api_key');
+			delete_option('belco_api_secret');
  
 		}
      
@@ -120,6 +114,8 @@ if(!class_exists('WP_Belco'))
      public function admin_init()
      {
         $this->init_settings();
+
+				add_action( 'admin_notices', array(&$this, 'installation_notice') );
      }
      
      /**
@@ -129,6 +125,7 @@ if(!class_exists('WP_Belco'))
      public function init_settings()
      {
        register_setting('wp_belco', 'belco_api_key');
+			 register_setting('wp_belco', 'belco_api_secret');
      }
 		 
 		 
@@ -196,8 +193,8 @@ if(!class_exists('WP_Belco'))
      {
        
        if ( array_key_exists( 'belco_cid', $wp->query_vars ) ){
-            include $this->plugin_path . 'test.php';
-            exit();
+            include $this->plugin_path . 'api.php';
+            return new Belco_API($wp->query_vars);
         }
         return;
        
@@ -280,15 +277,25 @@ if(!class_exists('WP_Belco'))
          wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
        }
 
-       $api_key = get_option('belco_api_key', wp_generate_password(48, false));
-       
+       $api_key = get_option('belco_api_key');
+       $api_secret = get_option('belco_api_secret');
+			 
        // Render the settings template
        include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
        
      }
+		 
+		
+		function installation_notice() {
+      $api_key = get_option('belco_api_key');
+      $api_secret = get_option('belco_api_secret');
+			if (!$api_key || !$api_secret) {
+				include(sprintf("%s/templates/notice.php", dirname(__FILE__)));
+			}
+		}
      
     
-  }
+	}
 
 }
 

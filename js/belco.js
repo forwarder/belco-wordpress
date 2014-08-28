@@ -1,1 +1,1 @@
-../../belco-client/dist/belco.js
+../../client/dist/belco.js

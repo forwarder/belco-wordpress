@@ -1,1 +1,1 @@
-../../belco-client/dist/click2call.js
+../../client/dist/click2call.js
