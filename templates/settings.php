@@ -3,7 +3,7 @@
   <?php if (!$api_key|| !$api_secret) : ?>
     <div>
 			<h2>Finish your Belco installation</h2>
-      <form ng-submit="setup.login()" class="belco-setup-login" ng-if="!loggedIn">				
+      <form ng-submit="setup.login(username, password)" class="belco-setup-login" ng-if="!loggedIn">				
         <h3>1. Log in with your Belco account</h3>
         
 				<div class="error settings-error" ng-if="error"><p><strong>{{error}}</strong></p></div>
@@ -14,7 +14,7 @@
               <label for="username">Username</label>
             </th>
             <td>
-              <input type="text" name="belco_username" ng-model="setup.username" class="regular-text">
+              <input type="text" name="belco_username" ng-model="username" class="regular-text">
             </td>
           </tr>
           <tr>
@@ -22,7 +22,7 @@
               <label for="password">Password</label>
             </th>
             <td>
-              <input type="password" name="belco_password" ng-model="setup.password" class="regular-text">
+              <input type="password" name="belco_password" ng-model="password" class="regular-text">
             </td>
           </tr>
         </table>
@@ -31,12 +31,13 @@
         </p>
       </form>
       
-      <form id="belco-setup-form" action="options.php" method="post" class="belco-setup" ng-if="loggedIn">
+      <form id="belco-setup-form" action="options.php" method="post" class="belco-setup" ng-if="loggedIn" ng-init="setup.init(null, '<?php echo wp_generate_password(48, false); ?>')">
 	      <?php @settings_fields('wp_belco'); ?>
 	      <?php @do_settings_fields('wp_belco'); ?>
 				
-				<input type="hidden" name="belco_api_key" value="{{apiKey}}">
-				<input type="hidden" name="belco_api_secret" value="{{apiSecret}}" ng-init="apiSecret='<?php echo wp_generate_password(48, false); ?>'">
+				<input type="hidden" name="belco_api_key" ng-model="apiKey" value="{{apiKey}}">
+				<input type="hidden" name="belco_api_secret" ng-model="apiSecret" value="{{apiSecret}}">
+				<input type="hidden" name="belco_host" ng-model="host" value="{{host}}">
 				
         <h3>2. Connect your Belco account to finish the installation</h3>
         
@@ -67,7 +68,7 @@
     </div>
   <?php else: ?>
     <h2>Settings</h2>
-    <form ng-submit="setup.login()" class="belco-setup-login" ng-if="!loggedIn">				
+    <form ng-submit="setup.login(username, password)" class="belco-setup-login" ng-if="!loggedIn" ng-hide="disconnecting">				
       <h3>Log in with your Belco account</h3>
       
 			<div class="error settings-error" ng-if="error"><p><strong>{{error}}</strong></p></div>
@@ -78,7 +79,7 @@
             <label for="username">Username</label>
           </th>
           <td>
-            <input type="text" name="belco_username" ng-model="setup.username" class="regular-text" autocomplete="off">
+            <input type="text" name="belco_username" ng-model="username" class="regular-text" autocomplete="off">
           </td>
         </tr>
         <tr>
@@ -86,7 +87,7 @@
             <label for="password">Password</label>
           </th>
           <td>
-            <input type="password" name="belco_password" ng-model="setup.password" class="regular-text">
+            <input type="password" name="belco_password" ng-model="password" class="regular-text">
           </td>
         </tr>
       </table>
@@ -94,12 +95,14 @@
         <button type="submit" class="button button-primary">Log in</button>
       </p>
     </form>
-    <form id="belco-setup-form" action="options.php" method="post" class="belco-setup" ng-show="loggedIn">
+    <form id="belco-setup-form" action="options.php" method="post" class="belco-setup" ng-show="loggedIn" ng-init="setup.init('<?php echo $api_key; ?>', '<?php echo $api_secret; ?>', '<?php echo $host; ?>')">
       <?php @settings_fields('wp_belco'); ?>
       <?php @do_settings_fields('wp_belco'); ?>
 			
-			<input type="hidden" name="belco_api_key" value="{{apiKey}}">
-			<input type="hidden" name="belco_api_secret" value="{{apiSecret}}" ng-init="apiSecret='<?php echo wp_generate_password(48, false); ?>'">
+			<input type="hidden" name="belco_api_key" ng-model="apiKey" value="{{apiKey}}">
+			<input type="hidden" name="belco_api_secret" ng-model="apiSecret" value="{{apiSecret}}">
+			<input type="hidden" name="belco_host" ng-model="host" value="{{host}}">
+			
 	    <table class="form-table">
 	      <tr>
 	        <th scope="row">

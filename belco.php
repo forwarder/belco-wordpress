@@ -49,7 +49,7 @@ if(!class_exists('WP_Belco'))
       
       // Check for WooCommerce
       if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-        //wp_die( __( 'WooCommerce is not installed on this systeem.' ) );
+        wp_die( __( 'WooCommerce is not installed on this systeem.' ) );
       }
 
       // register filters
@@ -59,9 +59,6 @@ if(!class_exists('WP_Belco'))
       add_action( 'admin_menu', array(&$this, 'add_menu') );
 			add_action( 'plugins_loaded', array(&$this, 'enqueue_scripts') );
       add_action( 'wp_before_admin_bar_render', array(&$this, 'belco_toolbar_menu'), 1 );
-      
-      //add_action('wp_dashboard_setup', array(&$this, 'add_dashboard_widget'));
-
       add_action( 'parse_request', array(&$this, 'belco_parse_request') );
     }
 
@@ -70,11 +67,6 @@ if(!class_exists('WP_Belco'))
      */
     public static function activate()
     {
-      
-      // Create data/tables for Belco
-      
-      //add_rewrite_rule('belco/(\d*)$','index.php?belco_cid=$matches[1]', 'top');
-      
       add_rewrite_rule('belco/([^/]*)$','index.php?belco_cid=$matches[1]', 'top');
       flush_rewrite_rules();
     }
@@ -85,14 +77,10 @@ if(!class_exists('WP_Belco'))
      
 		public static function deactivate()
 		{
-
-			// Delete custom Belco data/tables
-
 			flush_rewrite_rules();
-
 			delete_option('belco_api_key');
 			delete_option('belco_api_secret');
- 
+			delete_option('belco_host');
 		}
      
 		public static function user_role($role, $user_id = null) {
@@ -126,6 +114,7 @@ if(!class_exists('WP_Belco'))
      {
        register_setting('wp_belco', 'belco_api_key');
 			 register_setting('wp_belco', 'belco_api_secret');
+			 register_setting('wp_belco', 'belco_host');
      }
 		 
 		 
@@ -133,6 +122,7 @@ if(!class_exists('WP_Belco'))
 			if (!is_user_logged_in() || WP_Belco::user_role('customer')) {
 				wp_enqueue_style( 'belco-click2call', plugins_url('click2call.css', __FILE__));
 				wp_enqueue_script('belco-click2call', plugins_url('js/click2call.js', __FILE__), array('jquery'), null, false);
+				add_action('wp_footer', array(&$this, 'init_click2call'));
 			} else {
 				wp_enqueue_style( 'belco_admin_menu_styles', plugins_url('menu.css', __FILE__));
 				wp_enqueue_script('angular-core', '//ajax.googleapis.com/ajax/libs/angularjs/1.2.20/angular.js', array('jquery'), null, false);
@@ -144,25 +134,23 @@ if(!class_exists('WP_Belco'))
      * Register Toolbar Menu
      */
      
-      public function belco_toolbar_menu() {
+    public function belco_toolbar_menu() {
+      global $wp_admin_bar;
+			
+			if (WP_Belco::user_role('customer')) {
+				return;
+			}
 
-        global $wp_admin_bar;
-				
-				if (WP_Belco::user_role('customer')) {
-					return;
-				}
-
-        $args = array(
-          'id'     => 'belco-status',
-          'parent' => 'top-secondary',
-          'href'   => false,
-          'meta'   => array(
-            'html' => '<div ng-app="belco.status"><span class="belco-logo"></span> <span class="belco-status" ng-controller="StatusController as statusCtrl"><span class="belco-status-{{status}}" ng-click="statusCtrl.openClient()">{{status}}</span></span></div>'
-          )
-        );
-        $wp_admin_bar->add_menu( $args );
-
-      } 
+      $args = array(
+        'id'     => 'belco-status',
+        'parent' => 'top-secondary',
+        'href'   => false,
+        'meta'   => array(
+          'html' => '<div ng-app="belco.status"><span class="belco-logo"></span> <span class="belco-status" ng-controller="StatusController as statusCtrl"><span class="belco-status-{{status}}" ng-click="statusCtrl.openClient()">{{status}}</span></span></div>'
+        )
+      );
+      $wp_admin_bar->add_menu( $args );
+    } 
      
      
     /**
@@ -171,17 +159,12 @@ if(!class_exists('WP_Belco'))
      
      public function query_vars( $query_vars )
      {
-       
        $query_vars[] = 'belco';
-       
        $query_vars[] = 'belco_api';
-       
        $query_vars[] = 'belco_id';
-       
        $query_vars[] = 'belco_cid';
        
        return $query_vars;
-       
      }
      
      
@@ -191,73 +174,12 @@ if(!class_exists('WP_Belco'))
      
      public function belco_parse_request( &$wp )
      {
-       
        if ( array_key_exists( 'belco_cid', $wp->query_vars ) ){
             include $this->plugin_path . 'api.php';
             return new Belco_API($wp->query_vars);
         }
         return;
-       
-     }
-     
-     /**
-      * Create the widget
-      */
-      
-     public function add_dashboard_widget()
-     {
-       wp_add_dashboard_widget(
-                 'belco_dashboard_widget',
-                 'Belco - Let\'s Talk Shop',
-                 array(&$this, 'belco_dashboard_widget_function')
-        );
-        
-        global $wp_meta_boxes;
- 	
-        $normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
- 	
-        $example_widget_backup = array( 'belco_dashboard_widget' => $normal_dashboard['belco_dashboard_widget'] );
-        
-        unset( $normal_dashboard['belco_dashboard_widget'] );
- 
-        $sorted_dashboard = array_merge( $example_widget_backup, $normal_dashboard );
- 
-        $wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
-        
-     }
-     
-     /**
-      * Display the widget
-      */
-     
-    function belco_dashboard_widget_function()
-      {
-        $searchterm = isset($_GET["belco_cid"]) ? $_GET["belco_cid"] : "0614269740";
-        
-        global $wp;
-       
-        global $woocommerce;        
-        
-        preg_match("/(00|\+)?([0-9]{1,2})?(0)?(\d{9,10})/", $searchterm, $matches);
-        
-        $args = array(
-           'post_type' => 'shop_order',
-           'meta_key' => '_billing_phone',
-           'meta_query' => array(
-               array(
-                   'key' => '_billing_phone',
-                   'value' => end($matches),
-                   'compare' => 'LIKE',
-               )
-           )
-         );
-        
-        $loop = new WP_Query( $args );
-        
-        include(sprintf("%s/templates/widget.php", dirname(__FILE__)));
-      
-     }
-      
+     }    
      
      /**
       * Create a menu
@@ -265,35 +187,47 @@ if(!class_exists('WP_Belco'))
      
      public function add_menu()
      {
-       // add_menu_page('Belco Options','Belco','manage_options','belco',null,null,'60');
-
-       add_submenu_page( 'options-general.php', 'Belco', 'Belco', 'manage_options', 'belco-settings',array(&$this, 'belco_settings_page'));
-       
+       add_submenu_page( 'options-general.php', 'Belco', 'Belco', 'manage_options', 'belco-settings', array(&$this, 'settings_page'));
      }
+		 
+     /**
+      * Create the widget
+      */
 
-     public function belco_settings_page()
+     public function init_click2call()
+     {
+       $belco_api_key = get_option('belco_api_key');
+			 $belco_host = get_option('belco_host');
+       include(sprintf("%s/templates/click2call.php", dirname(__FILE__)));
+     }
+		 
+     /**
+      * Settings page
+      */
+
+     public function settings_page()
      {
        if ( !current_user_can( 'manage_options' ) )  {
          wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
        }
-
        $api_key = get_option('belco_api_key');
        $api_secret = get_option('belco_api_secret');
-			 
-       // Render the settings template
+			 $host = get_option('belco_host');
        include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
        
      }
 		 
-		
+     /**
+      * Show installation notice when Belco hasnt been configured yet
+      */
 		function installation_notice() {
       $api_key = get_option('belco_api_key');
       $api_secret = get_option('belco_api_secret');
-			if (!$api_key || !$api_secret) {
+			$host = get_option('belco_host');
+			if (!$api_key || !$api_secret || !$host) {
 				include(sprintf("%s/templates/notice.php", dirname(__FILE__)));
 			}
 		}
-     
     
 	}
 
@@ -308,5 +242,4 @@ if(class_exists('WP_Belco'))
     // instantiate the plugin class
     $wp_belco = new WP_Belco();
 }
-
 ?>
