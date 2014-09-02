@@ -55,6 +55,7 @@ if(!class_exists('WP_Belco'))
       // register filters
       
       add_filter( 'query_vars', array(&$this, 'query_vars') );
+			add_action( 'init', array(&$this, 'init') );
       add_action( 'admin_init', array(&$this, 'admin_init') );
       add_action( 'admin_menu', array(&$this, 'add_menu') );
 			add_action( 'plugins_loaded', array(&$this, 'enqueue_scripts') );
@@ -67,8 +68,7 @@ if(!class_exists('WP_Belco'))
      */
     public static function activate()
     {
-      add_rewrite_rule('belco/([^/]*)$','index.php?belco_cid=$matches[1]', 'top');
-      flush_rewrite_rules();
+
     }
     
     /**
@@ -93,6 +93,12 @@ if(!class_exists('WP_Belco'))
 				return false;
 
 			return in_array( $role, (array) $user->roles );
+		}
+		
+		public function init()
+		{
+			add_rewrite_rule('^belco/([^/]*)/([^/]*)$','index.php?belco-search=$matches[1]&query=$matches[2]', 'top');
+      flush_rewrite_rules();
 		}
      
      /**
@@ -159,10 +165,8 @@ if(!class_exists('WP_Belco'))
      
      public function query_vars( $query_vars )
      {
-       $query_vars[] = 'belco';
-       $query_vars[] = 'belco_api';
-       $query_vars[] = 'belco_id';
-       $query_vars[] = 'belco_cid';
+       $query_vars[] = 'belco-search';
+			 $query_vars[] = 'query';
        
        return $query_vars;
      }
@@ -174,9 +178,9 @@ if(!class_exists('WP_Belco'))
      
      public function belco_parse_request( &$wp )
      {
-       if ( array_key_exists( 'belco_cid', $wp->query_vars ) ){
-            include $this->plugin_path . 'api.php';
-            return new Belco_API($wp->query_vars);
+       if ( isset($wp->query_vars['belco-search']) ){
+          include $this->plugin_path . 'api.php';
+          return new Belco_API($wp->query_vars);
         }
         return;
      }    

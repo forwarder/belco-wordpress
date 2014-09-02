@@ -7,9 +7,15 @@ class Belco_API {
 		
 		$this->headers = $this->get_headers($_SERVER);
 		
-		$this->check_authentication();
-		
-		return $this->query($query_vars['belco_cid']);
+		// $this->check_authentication();
+
+		switch($query_vars['belco-search']) {
+			case 'customer':
+				return $this->find_by_cid($query_vars['query']);
+			case 'number':
+			default:
+				return $this->find_by_phone($query_vars['query']);
+		}
 	}
 	
 	public function check_authentication() {
@@ -37,7 +43,7 @@ class Belco_API {
 		return $headers;
 	}
 	
-	protected function _parsePhoneNumber($number) {
+	protected function _parse_number($number) {
     if (!preg_match("/(?P<prefix>00|\+)?(?P<country_code>[0-9]{1,2})?(?P<local_prefix>0)?(?P<number>\d{9,})/", $number, $parsed)) {
 			throw new Exception('Invalid phone number');
     }
@@ -53,8 +59,19 @@ class Belco_API {
 		return $variations;
 	}
 	
-	public function query($number = '') {
-		$matches = $this->_parsePhoneNumber($number);
+	public function find_by_cid($id) {
+		if ($customer = $this->get_customer($id)) {
+			$orders = $this->find_customer_orders($customer['id']);
+		}
+		
+		return wp_send_json(array(
+			'customer' => $customer,
+			'orders' => $orders
+		));
+	}
+	
+	public function find_by_phone($number = '') {
+		$matches = $this->_parse_number($number);
 		$phone = $matches['national'];
 		
 		$customer = $this->find_customer_by_phone($phone);
@@ -70,7 +87,7 @@ class Belco_API {
 		));
 	}
 	
-	public function find_customer_by_phone($phone) {
+	public function find_customer_by_phone($number) {
 		$query = array(
 			'role' => 'customer',
 			'fields' => array('id'),
@@ -80,7 +97,7 @@ class Belco_API {
 		);
 
     $users = get_users( $query );
-		
+
 		if (!count($users)) {
 			return null;
 		}
@@ -90,7 +107,6 @@ class Belco_API {
 	
 	public function get_customer($id) {
 		$customer = new WP_User($id);
-		
 		return array(
 			'id'               => $customer->ID,
 			'created_at'       => $customer->user_registered,
