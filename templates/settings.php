@@ -35,8 +35,8 @@
 	      <?php @settings_fields('wp_belco'); ?>
 	      <?php @do_settings_fields('wp_belco'); ?>
 				
-				<input type="hidden" name="belco_api_key" ng-model="apiKey" value="{{apiKey}}">
-				<input type="hidden" name="belco_api_secret" ng-model="apiSecret" value="{{apiSecret}}">
+				<input type="hidden" name="belco_api_key" ng-model="api.key" value="{{api.key}}">
+				<input type="hidden" name="belco_api_secret" ng-model="api.secret" value="{{api.secret}}">
 				<input type="hidden" name="belco_host" ng-model="host" value="{{host}}">
 				
         <h3>2. Connect your Belco account to finish the installation</h3>
@@ -99,8 +99,8 @@
       <?php @settings_fields('wp_belco'); ?>
       <?php @do_settings_fields('wp_belco'); ?>
 			
-			<input type="hidden" name="belco_api_key" ng-model="apiKey" value="{{apiKey}}">
-			<input type="hidden" name="belco_api_secret" ng-model="apiSecret" value="{{apiSecret}}">
+			<input type="hidden" name="belco_api_key" ng-model="api.key" value="{{api.key}}">
+			<input type="hidden" name="belco_api_secret" ng-model="api.secret" value="{{api.secret}}">
 			<input type="hidden" name="belco_host" ng-model="host" value="{{host}}">
 			
 	    <table class="form-table">

@@ -194,16 +194,27 @@ if(!class_exists('WP_Belco'))
        add_submenu_page( 'options-general.php', 'Belco', 'Belco', 'manage_options', 'belco-settings', array(&$this, 'settings_page'));
      }
 		 
-     /**
-      * Create the widget
-      */
+		/**
+		* Create the widget
+		*/
 
-     public function init_click2call()
-     {
-       $belco_api_key = get_option('belco_api_key');
-			 $belco_host = get_option('belco_host');
-       include(sprintf("%s/templates/click2call.php", dirname(__FILE__)));
-     }
+		public function init_click2call()
+		{
+			$config = array(
+				'host' => get_option('belco_host'),
+				'apiKey' => get_option('belco_api_key')
+			);
+
+			if (is_user_logged_in() && WP_Belco::user_role('customer')) {
+				$user = wp_get_current_user();
+				$config['customer'] = array(
+					'id' => $user->ID,
+					'name' => sprintf('%s %s', $user->user_firstname, $user->user_lastname)
+				);
+			}
+
+			include(sprintf("%s/templates/click2call.php", dirname(__FILE__)));
+		}
 		 
      /**
       * Settings page
