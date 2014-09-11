@@ -56,40 +56,42 @@
   color: #fff!important;
 }
 
-#wp-admin-bar-belco-status {
-  //background: #ffd140!important;
-  //float: right!important;
-  width: 250px;
+#belco-status {
+  width: 150px;
+  background-color: #444;
+  cursor: pointer;
 }
 
 #wp-admin-bar-belco-status .ab-empty-item {
   display: none !important;
 }
 
-#wp-admin-bar-belco-status > .ng-scope:before {
+#belco-status .belco-logo {
+  line-height: 100%;
+  display: inline-block;
+  padding: 0 6px;
+}
+#belco-status .belco-logo:before {
   font-family:forwarder!important;
   content:"a";
-  font-size:1.3em!important;
   color: #ffd140!important;
 }
 
-/*#wp-admin-bar-belco-status a:hover{
-  color: #ffd140!important;
-}*/
+#belco-status > span {
 
-#wp-admin-bar-belco-status > span {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  width: 150px;
-  background-color: #444;
-  text-indent: 5px;
 }
 
-#wp-admin-bar-belco-status > span > div > p.available {
-  color: #00ff78;
+.toplevel_page_belco #wpbody-content, .belco_page_belco-settings #wpbody-content {
+  padding-bottom: 0;
 }
-
-#wp-admin-bar-belco-status > span > div > p.dnd {
-  color: #ff7800;
+#belco-container {
+  background: #fff;
+  margin: 20px 20px 0 0;
+  border: 1px solid #e5e5e5;
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.04);
+  box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+#belco-frame {
+  width: 100%;
+  height: 100%;
 }

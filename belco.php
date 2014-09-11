@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+define('BELCO_HOST', '127.0.0.1:3000');
 
 if(!class_exists('WP_Belco'))
 {
@@ -80,7 +81,6 @@ if(!class_exists('WP_Belco'))
 			flush_rewrite_rules();
 			delete_option('belco_api_key');
 			delete_option('belco_api_secret');
-			delete_option('belco_host');
 		}
      
 		public static function user_role($role, $user_id = null) {
@@ -120,20 +120,20 @@ if(!class_exists('WP_Belco'))
      {
        register_setting('wp_belco', 'belco_api_key');
 			 register_setting('wp_belco', 'belco_api_secret');
-			 register_setting('wp_belco', 'belco_host');
      }
 		 
 		 
 		public function enqueue_scripts() {
 			if (!is_user_logged_in() || WP_Belco::user_role('customer')) {
-				wp_enqueue_style( 'belco-click2call', plugins_url('click2call.css', __FILE__));
+				wp_enqueue_style( 'belco-click2call', plugins_url('css/click2call.css', __FILE__));
 				wp_enqueue_script('belco-click2call', plugins_url('js/click2call.js', __FILE__), array('jquery'), null, false);
-				add_action('wp_footer', array(&$this, 'init_click2call'));
-			} else {
-				wp_enqueue_style( 'belco_admin_menu_styles', plugins_url('menu.css', __FILE__));
-				wp_enqueue_script('angular-core', '//ajax.googleapis.com/ajax/libs/angularjs/1.2.20/angular.js', array('jquery'), null, false);
-				wp_enqueue_script('belco', plugins_url('js/belco.js', __FILE__), array('angular-core'), null, false);
+				add_action('wp_footer', array(&$this, 'init_config'));
+			} else if(is_admin() && current_user_can('manage_options')){
+				wp_enqueue_style( 'belco-admin', plugins_url('css/admin.css', __FILE__));
+				wp_enqueue_script('belco-admin', plugins_url('js/admin.js', __FILE__), array('jquery'), null, false);
+				add_action('admin_footer', array(&$this, 'init_config'));
 			}
+			
 		}
      
     /**
@@ -152,7 +152,7 @@ if(!class_exists('WP_Belco'))
         'parent' => 'top-secondary',
         'href'   => false,
         'meta'   => array(
-          'html' => '<div ng-app="belco.status"><span class="belco-logo"></span> <span class="belco-status" ng-controller="StatusController as statusCtrl"><span class="belco-status-{{status}}" ng-click="statusCtrl.openClient()">{{status}}</span></span></div>'
+          'html' => '<div id="belco-status" title="Open Belco client"><span class="belco-logo"></span><span class="belco-status belco-status-connecting">Connecting...</span></div>'
         )
       );
       $wp_admin_bar->add_menu( $args );
@@ -183,25 +183,38 @@ if(!class_exists('WP_Belco'))
           return new Belco_API($wp->query_vars);
         }
         return;
-     }    
-     
-     /**
-      * Create a menu
-      */ 
-     
-     public function add_menu()
-     {
-       add_submenu_page( 'options-general.php', 'Belco', 'Belco', 'manage_options', 'belco-settings', array(&$this, 'settings_page'));
-     }
+     }   
 		 
+     /**
+      * Check if plugin installation is completed
+      */
+		 
+		 public function installation_complete() {
+			 $api_key = get_option('belco_api_key');
+			 $api_secret = get_option('belco_api_key');
+			 
+       return !empty($api_key) && !empty($api_secret);
+		 } 
+     
 		/**
-		* Create the widget
+		* Create a menu
+		*/ 
+
+		public function add_menu()
+		{
+			add_menu_page('Belco dashboard', 'Belco', 'manage_options', 'belco', array(&$this, 'dashboard_page'), null, 30);
+			add_submenu_page( 'belco', 'Belco dashboard', 'Dashboard', 'manage_options', 'belco', array(&$this, 'dashboard_page'));
+			add_submenu_page( 'belco', 'Belco settings', 'Settings', 'manage_options', 'belco-settings', array(&$this, 'settings_page'));
+		}
+
+		/**
+		* Initialize the Belco client config
 		*/
 
-		public function init_click2call()
+		public function init_config()
 		{
 			$config = array(
-				'host' => get_option('belco_host'),
+				'host' => BELCO_HOST,
 				'apiKey' => get_option('belco_api_key')
 			);
 
@@ -213,33 +226,55 @@ if(!class_exists('WP_Belco'))
 				);
 			}
 
-			include(sprintf("%s/templates/click2call.php", dirname(__FILE__)));
+			include(sprintf("%s/templates/config.php", dirname(__FILE__)));
 		}
-		 
-     /**
-      * Settings page
-      */
+		
+    /**
+     * Dashboard page
+     */
 
-     public function settings_page()
-     {
-       if ( !current_user_can( 'manage_options' ) )  {
-         wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
-       }
-       $api_key = get_option('belco_api_key');
-       $api_secret = get_option('belco_api_secret');
-			 $host = get_option('belco_host');
-       include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
-       
-     }
-		 
-     /**
-      * Show installation notice when Belco hasnt been configured yet
-      */
-		function installation_notice() {
+    public function dashboard_page()
+    {
+      if ( !current_user_can( 'manage_options' ) )  {
+        wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+      }
+			
+			$installed = $this->installation_complete();
+			
       $api_key = get_option('belco_api_key');
       $api_secret = get_option('belco_api_secret');
-			$host = get_option('belco_host');
-			if (!$api_key || !$api_secret || !$host) {
+			
+			$page = '';
+			if (!$installed) {
+				$page = '/install?type=woocommerce';
+			}
+			
+      include(sprintf("%s/templates/dashboard.php", dirname(__FILE__)));
+    }
+		 
+		/**
+		* Settings page
+		*/
+
+		public function settings_page()
+		{
+			if ( !current_user_can( 'manage_options' ) )  {
+				wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+			}
+			
+			$installed = $this->installation_complete();
+
+			$api_key = get_option('belco_api_key');
+			$api_secret = get_option('belco_api_secret');
+
+			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
+		}
+
+		/**
+			* Show installation notice when Belco hasnt been configured yet
+			*/
+		function installation_notice() {
+			if (!$this->installation_complete()) {
 				include(sprintf("%s/templates/notice.php", dirname(__FILE__)));
 			}
 		}
