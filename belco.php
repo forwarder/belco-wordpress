@@ -47,11 +47,6 @@ if(!class_exists('WP_Belco'))
     {
       
       $this->plugin_path = plugin_dir_path(__FILE__);
-      
-      // Check for WooCommerce
-      if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-        wp_die( __( 'WooCommerce is not installed on this systeem.' ) );
-      }
 
       // register filters
       
@@ -110,6 +105,9 @@ if(!class_exists('WP_Belco'))
         $this->init_settings();
 
 				add_action( 'admin_notices', array(&$this, 'installation_notice') );
+				
+				add_action( 'admin_notices', array(&$this, 'woocommerce_notice') );
+				
      }
      
      /**
@@ -278,7 +276,15 @@ if(!class_exists('WP_Belco'))
 				include(sprintf("%s/templates/notice.php", dirname(__FILE__)));
 			}
 		}
-    
+		
+		/**
+			* Show notice when WooCommerce hasnt been activated yet
+			*/
+		function woocommerce_notice() {
+		  if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+        include(sprintf("%s/templates/activate.php", dirname(__FILE__)));
+      }
+    }
 	}
 
 }
