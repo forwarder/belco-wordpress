@@ -244,9 +244,9 @@ if(!class_exists('WP_Belco'))
       $api_key = get_option('belco_api_key');
       $api_secret = get_option('belco_api_secret');
 			
-			$page = '';
+			$page = '?type=woocommerce';
 			if (!$installed) {
-				$page = '/install?type=woocommerce';
+				$page .= '#install';
 			}
 			
       include(sprintf("%s/templates/dashboard.php", dirname(__FILE__)));
