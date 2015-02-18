@@ -32,8 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define('BELCO_HOST', '127.0.0.1:3000');
-define('BELCO_USE_SSL', false);
+define('BELCO_HOST', 'app.belco.io');
+define('BELCO_USE_SSL', true);
 
 if(!class_exists('WP_Belco')) {
 
@@ -44,11 +44,6 @@ if(!class_exists('WP_Belco')) {
 		 */
 		public function __construct() {
       $this->plugin_path = plugin_dir_path(__FILE__);
-      
-      // Check for WooCommerce
-      if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-        wp_die( __( 'WooCommerce is not installed on this systeem.' ) );
-      }
 
       // register filters
 			add_action( 'init', array(&$this, 'init') );
@@ -96,6 +91,7 @@ if(!class_exists('WP_Belco')) {
 		public function admin_init() {
 			$this->init_settings();
 			add_action( 'admin_notices', array(&$this, 'installation_notice') );
+			add_action( 'admin_notices', array(&$this, 'woocommerce_notice') );
 		}
      
 		/**
@@ -106,7 +102,6 @@ if(!class_exists('WP_Belco')) {
 			register_setting('wp_belco', 'belco_shop_id');
 			register_setting('wp_belco', 'belco_secret');
 		}
-		 
 		 
 		public function enqueue_scripts() {
 			if (!is_user_logged_in() || WP_Belco::user_role('customer')) {
@@ -121,8 +116,8 @@ if(!class_exists('WP_Belco')) {
 		}
 		 
 		/**
-			* Check if plugin installation is completed
-			*/
+		 * Check if plugin installation is completed
+		 */
 
 		public function installation_complete() {
 			$shop_id = get_option('belco_shop_id');
@@ -132,8 +127,8 @@ if(!class_exists('WP_Belco')) {
 		} 
      
 		/**
-		* Create a menu
-		*/ 
+		 * Create a menu
+		 */ 
 
 		public function add_menu()
 		{
@@ -143,8 +138,8 @@ if(!class_exists('WP_Belco')) {
 		}
 
 		/**
-		* Initialize the Belco client widget
-		*/
+		 * Initialize the Belco client widget
+		 */
 
 		public function init_widget() {
 			$secret = get_option('belco_secret');
@@ -188,8 +183,8 @@ if(!class_exists('WP_Belco')) {
     }
 		 
 		/**
-		* Settings page
-		*/
+		 * Settings page
+		 */
 
 		public function settings_page()
 		{
@@ -206,14 +201,22 @@ if(!class_exists('WP_Belco')) {
 		}
 
 		/**
-			* Show installation notice when Belco hasnt been configured yet
-			*/
+		 * Show installation notice when Belco hasnt been configured yet
+		 */
 		public function installation_notice() {
 			if (!$this->installation_complete()) {
 				include(sprintf("%s/templates/notice.php", dirname(__FILE__)));
 			}
 		}
-    
+		
+		/**
+		 * Show notice when WooCommerce hasnt been activated yet
+		 */
+		function woocommerce_notice() {
+		  if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+        include(sprintf("%s/templates/activate.php", dirname(__FILE__)));
+      }
+    }
 	}
 
 }
