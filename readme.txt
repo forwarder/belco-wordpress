@@ -1,5 +1,6 @@
 === Belco.io for Woocommerce (Beta) ===
 Contributors: belco
+Donate link: https://belco.io
 Tags: ecommerce, woocommerce, telephony, customer support, crm
 Requires at least: 3.9.1
 Tested up to: 4.1
@@ -26,6 +27,10 @@ e.g.
 1. Upload `belco` to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Follow the instructions to finish the installation
+
+== Upgrade Notice ==
+
+-
 
 == Frequently Asked Questions ==
 
