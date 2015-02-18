@@ -1,1 +1,0 @@
-../../client/dist/click2call.js

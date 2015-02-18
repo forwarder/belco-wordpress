@@ -1,5 +1,5 @@
-#belco-click2call {
-	position: absolute;
+#belco-widget {
+	position: fixed;
 	bottom: -6px;
 	right: 100px;
 	padding: 6px 12px 12px 12px;
@@ -12,6 +12,9 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     transition: all .2s ease-out;
 }
-#belco-click2call:hover {
+#belco-widget:hover {
     bottom: 0;
+}
+#belco-widget form {
+  display: none;
 }
