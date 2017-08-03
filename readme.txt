@@ -1,22 +1,23 @@
-=== Belco.io for Woocommerce (Beta) ===
+=== Belco.io for Woocommerce ===
 Contributors: belco
 Donate link: https://belco.io
-Tags: ecommerce, woocommerce, telephony, customer support, crm
+Tags: ecommerce, woocommerce, live-chat, email, telephony, customer support, crm
 Requires at least: 3.9.1
 Tested up to: 4.5
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-“Easy to use customer service platform for webstores.”
+“Make customer service your competitive advantage.”
 
 == Description ==
 
 This plugin integrates Belco.io with Woocommerce.
 
-We automate recurring processes so you can focus on giving the best personal support to your customers.
+Belco is the newest generation customer service software
+that helps you pro-actively engage your customers, wherever they are.
 
-Belco.io is currently in beta and signup is invite only. Request an invite at https://app.belco.io/invite
+You can sign up for a 14 day free trial at https://app.belco.io/signup
 
 == Installation ==
 
@@ -36,7 +37,7 @@ e.g.
 
 = Where can I sign-up? =
 
-Belco.io is currently in beta and signup is invite only. Request an invite at https://app.belco.io/invite
+You can sign up for a 14 day free trial at https://app.belco.io/signup
 
 == Screenshots ==
 
