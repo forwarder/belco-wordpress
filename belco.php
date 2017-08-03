@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.4.1
+ * @version 0.5.0
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: Telephony for webshops
-Version: 0.4.1
+Version: 0.5.0
 Author: Forwarder B.V.
 Author URI: http://www.forwarder.nl
 License: GPLv2 or later
@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 define('BELCO_HOST', 'app.belco.io');
-define('BELCO_API_HOST', '127.0.0.1:3200');
-define('BELCO_USE_SSL', false);
+define('BELCO_API_HOST', 'api.belco.io');
+define('BELCO_USE_SSL', true);
 
 if(!class_exists('WP_Belco')) {
 
@@ -51,6 +51,7 @@ if(!class_exists('WP_Belco')) {
       add_action( 'admin_init', array(&$this, 'admin_init') );
       add_action( 'admin_menu', array(&$this, 'add_menu') );
       add_action( 'plugins_loaded', array(&$this, 'enqueue_scripts') );
+      add_action( 'admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts') );
     }
 
     /**
@@ -111,9 +112,11 @@ if(!class_exists('WP_Belco')) {
     public function enqueue_scripts() {
       if (!is_user_logged_in() || WP_Belco::user_role('customer')) {
         add_action('wp_footer', array(&$this, 'init_widget'));
-      } else if(is_admin() && current_user_can('manage_options')){
-        wp_enqueue_style( 'belco-admin', plugins_url('css/admin.css', __FILE__));
       }
+    }
+
+    public function admin_enqueue_scripts() {
+      wp_enqueue_style( 'belco-admin', plugins_url('css/admin.css', __FILE__));
     }
 
     /**
