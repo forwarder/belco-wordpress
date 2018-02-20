@@ -8,7 +8,7 @@
     <?php if ($woocommerce) : ?>
     <form id="belco-settings-form" action="options.php" method="post" class="belco-setup">
       <?php @settings_fields('wp_belco'); ?>
-      <?php @do_settings_fields('wp_belco'); ?>
+      <?php @do_settings_fields('wp_belco', ''); ?>
 
       <?php settings_errors(); ?>
 
