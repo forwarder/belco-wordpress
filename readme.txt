@@ -4,7 +4,7 @@ Donate link: https://belco.io
 Tags: ecommerce, woocommerce, live-chat, email, telephony, customer support, crm
 Requires at least: 3.9.1
 Tested up to: 4.5
-Stable tag: 0.5.1
+Stable tag: 0.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,9 @@ You can sign up for a 14 day free trial at https://app.belco.io/signup
 1. Customer card, instantly see all customer information when you receive or make a call.
 
 == Changelog ==
+
+= 0.5.2 =
+- PHP 7 support
 
 = 0.5.0 =
 - Wordpress 4.5+ support
