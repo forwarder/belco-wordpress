@@ -4,8 +4,6 @@
 
     <p>Don't have a Belco.io account yet? <a href="https://app.belco.io/signup">Sign-up for free now</a>.</p>
 
-
-    <?php if ($woocommerce) : ?>
     <form id="belco-settings-form" action="options.php" method="post" class="belco-setup">
       <?php @settings_fields('wp_belco'); ?>
       <?php @do_settings_fields('wp_belco', ''); ?>
@@ -31,8 +29,5 @@
         <button type="submit" class="button button-primary">Save changes</button>
       </p>
     </form>
-    <?php else: ?>
-      <p>Pleas install or activate WooCommerce first to configure Belco.</p>
-    <?php endif; ?>
   </div>
 </div>

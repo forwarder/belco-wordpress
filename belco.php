@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.5.1
+ * @version 0.6.0
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.5.1
+Version: 0.6.0
 Author: Forwarder B.V.
 Author URI: http://www.forwarder.nl
 License: GPLv2 or later
@@ -86,6 +86,8 @@ if(!class_exists('WP_Belco')) {
       if ($this->woocommerce_active()) {
         require('connectors/woocommerce.php');
         $this->connector = new WooCommerceConnector();
+      } else {
+        $this->connector = new WordPressConnector();
       }
     }
 
@@ -95,7 +97,6 @@ if(!class_exists('WP_Belco')) {
     public function admin_init() {
       $this->init_settings();
       add_action( 'admin_notices', array(&$this, 'installation_notice') );
-      add_action( 'admin_notices', array(&$this, 'woocommerce_notice') );
     }
 
     /**
@@ -202,15 +203,6 @@ if(!class_exists('WP_Belco')) {
      */
     public function woocommerce_active() {
       return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
-    }
-
-    /**
-     * Show notice when WooCommerce hasnt been activated yet
-     */
-    public function woocommerce_notice() {
-      if (!$this->woocommerce_active()) {
-        include(sprintf("%s/templates/activate.php", dirname(__FILE__)));
-      }
     }
 
     /**

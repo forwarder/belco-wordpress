@@ -8,6 +8,8 @@ class WooCommerceConnector {
     $this->wc = WooCommerce::instance();
 
     add_action('woocommerce_thankyou', array($this, 'order_completed'));
+    add_action('profile_update', array($this, 'customer_updated'));
+    add_action('deleted_user', array($this, 'customer_deleted'));
 
     add_filter('woocommerce_api_query_args', array($this, 'api_order_search_custom_fields'), 20, 2);
   }
@@ -24,6 +26,19 @@ class WooCommerceConnector {
     $customer = $this->get_customer_from_order($id);
     if ($customer) {
       Belco_API::post('/sync/customer', $customer);
+    }
+  }
+
+  public function customer_updated($id) {
+    $customer = $this->get_customer($id);
+    if ($customer) {
+      Belco_API::post('/sync/customer', $customer);
+    }
+  }
+
+  public function customer_deleted($id) {
+    if ($id) {
+      Belco_API::post('/sync/customer/delete', array('id' => $id));
     }
   }
 
@@ -66,7 +81,8 @@ class WooCommerceConnector {
     $customer = array(
       'id' => $user->ID,
       'email' => $user->user_email,
-      'name' => get_user_meta($user->ID, 'billing_first_name', true) . ' ' . get_user_meta($user->ID, 'billing_last_name', true),
+      'firstName' => get_user_meta($user->ID, 'billing_first_name', true),
+      'lastName' => get_user_meta($user->ID, 'billing_last_name', true),
       'signedUp' => strtotime($user->user_registered),
       'phoneNumber' => get_user_meta($user->ID, 'billing_phone', true),
       'country' => get_user_meta($user->ID, 'billing_country', true),
