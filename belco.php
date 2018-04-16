@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.6.0
+ * @version 0.6.1
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.6.0
+Version: 0.6.1
 Author: Forwarder B.V.
 Author URI: http://www.forwarder.nl
 License: GPLv2 or later
@@ -87,6 +87,7 @@ if(!class_exists('WP_Belco')) {
         require('connectors/woocommerce.php');
         $this->connector = new WooCommerceConnector();
       } else {
+        require('connectors/wordpress.php');
         $this->connector = new WordPressConnector();
       }
     }
