@@ -156,7 +156,7 @@ if(!class_exists('WP_Belco')) {
       );
         if(!is_user_logged_in()){
           $data = $this->connector->get_identify_data($secret);
-          if(!is_null($data)) {
+          if(!empty($data)) {
             if($secret) {
               $config = array("hash" => hash_hmac("sha256", $data['email'], $secret));
             }

@@ -15,7 +15,15 @@ class WordPressConnector {
       'url' => get_site_url()
     ), array('secret' => $secret));
   }
-
+  
+  public function get_identify_data($secret) {
+    $data = $this->wc->session->get( 'belco_identify_data' );
+      if(!is_null($data)) {
+        return $data;
+      } else {
+        return [];
+      }
+  }
   public function customer_updated($id) {
     $customer = $this->get_customer($id);
     if ($customer) {

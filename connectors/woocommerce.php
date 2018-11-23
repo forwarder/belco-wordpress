@@ -24,12 +24,11 @@ class WooCommerceConnector {
 
   public function get_identify_data($secret) {
     $data = $this->wc->session->get( 'belco_identify_data' );
-      if(!is_null($data)) {
-        return $data;
-      } else {
-        $data = [];
-        return $data;
-      }
+    if(!is_null($data)) {
+      return $data;
+    } else {
+      return [];
+    }
   }
 
   public function order_completed($id) {
@@ -134,7 +133,6 @@ class WooCommerceConnector {
   }
 
   public function get_customer_from_order($order) {
-    $order = new WC_Order($order);
     if (!$order) {
       return null;
     }
