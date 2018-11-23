@@ -7,7 +7,7 @@ class WooCommerceConnector {
     // init hooks etc
     $this->wc = WooCommerce::instance();
 
-    add_action('woocommerce_thankyou', array($this, 'order_completed'));
+    add_action('woocommerce_checkout_order_processed', array($this, 'order_completed'));
     add_action('profile_update', array($this, 'customer_updated'));
     add_action('deleted_user', array($this, 'customer_deleted'));
 
@@ -22,10 +22,21 @@ class WooCommerceConnector {
     ), array('secret' => $secret));
   }
 
+  public function get_identify_data($secret) {
+    $data = $this->wc->session->get( 'belco_identify_data' );
+      if(!is_null($data)) {
+        return $data;
+      } else {
+        $data = [];
+        return $data;
+      }
+  }
+
   public function order_completed($id) {
-    $customer = $this->get_customer_from_order($id);
+    $order = new WC_Order($id);
+    $customer = $this->get_customer_from_order($order);
     if ($customer) {
-      Belco_API::post('/sync/customer', $customer);
+      $this->wc->session->set( 'belco_identify_data' , $customer );
     }
   }
 
@@ -122,28 +133,25 @@ class WooCommerceConnector {
     return $cart;
   }
 
-  public function get_customer_from_order($id) {
-    $order = new WC_Order($id);
+  public function get_customer_from_order($order) {
+    $order = new WC_Order($order);
     if (!$order) {
       return null;
     }
 
-    if ($order->customer_user) {
-      $customer = $this->get_customer($order->customer_user);
+    if ($order->get_user_id()) {
+      $customer = $this->get_customer($order->get_user());
     } else {
       $customer = array(
-        'email' => $order->billing_email,
-        'phoneNumber' => $order->billing_phone,
-        'name' => $order->billing_first_name . ' ' . $order->billing_last_name,
-        'country' => $order->billing_country,
-        'city' => $order->billing_city,
+        'email' => $order->get_billing_email(),
+        'phoneNumber' => $order->get_billing_phone(),
+        'name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+        'country' => $order->get_billing_country(),
+        'city' => $order->get_billing_city(),
       );
     }
 
-    return array_merge(array(
-      'ipAddress' => $order->customer_ip_address,
-      'userAgent' => $order->customer_user_agent
-    ), $customer);
+    return $customer;
   }
 
 }

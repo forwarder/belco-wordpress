@@ -154,16 +154,21 @@ if(!class_exists('WP_Belco')) {
       $config = array(
         'shopId' => get_option('belco_shop_id')
       );
-
-      if (is_user_logged_in() && WP_Belco::user_role('customer')) {
-        $user = wp_get_current_user();
-
-        if ($secret) {
-          $config['hash'] = hash_hmac("sha256", $user->user_email, $secret);
+        if(!is_user_logged_in()){
+          $data = $this->connector->get_identify_data($secret);
+          if(!is_null($data)) {
+            if($secret) {
+              $config = array("hash" => hash_hmac("sha256", $data['email'], $secret));
+            }
+            $config = array_merge($config, $data);
+          }
+        } elseif (WP_Belco::user_role('customer')) {
+          $user = wp_get_current_user();
+          if($secret) {
+            $config = array("hash" => hash_hmac("sha256", $user->user_email, $secret));
+          }
+          $config = array_merge($config, $this->connector->get_customer($user->ID));
         }
-        $config = array_merge($config, $this->connector->get_customer($user->ID));
-      }
-
       if ($cart = $this->connector->get_cart()) {
         $config['cart'] = $cart;
       }
