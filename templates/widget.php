@@ -1,4 +1,6 @@
+<script>!function(a,b){var c=[],d=window.belcoFunction||"Belco";window[d]||(window[d]=function(a){if(void 0===window[d][a])throw new Error("Unknown method");return window[d][a].apply(window[d],Array.prototype.slice.call(arguments,1))});for(var e=["init","sync","track","page","open","close","toggle","on","once","off","anonymousId","customer","reset","sendMessage"],f=function(a){return function(){var b=Array.prototype.slice.call(arguments);return b.unshift(a),c.push(b),window[d]}},g=0;g<e.length;g++){var h=e[g];window[d][h]=f(h)}function i(){while(c.length>0){var a=c.shift();try{window[d].apply(window[d],a)}catch(b){console.error(b)}}}window[d].load=function(c){if(!a.getElementById("belco-js")){var d=a.createElement(b);d.async=!0,d.id="belco-js",d.type="text/javascript",d.src=("https:"===a.location.protocol?"https://":"http://")+"cdn.belco.io/widget.min.js",d.onload=d.onreadystatechange=function(a){var b=this.readyState;b&&"complete"!=b&&"loaded"!=b||("function"==typeof c&&c(a),i())};var e=a.getElementsByTagName(b)[0];e.parentNode.insertBefore(d,e)}},window.belcoConfig&&window[d].load(function(){window[d]("init",window.belcoConfig)})}(document,"script");</script>
 <script>
-window.belcoConfig = <?php echo json_encode($config); ?>;
+Belco.load(function() {
+  Belco.init(<?php echo json_encode($config); ?>);
+});
 </script>
-<script>(function(e,t){var n=e.createElement(t);n.async=true;n.src="//cdn.belco.io/widget.min.js";n.onload=n.onreadystatechange=function(){var e=this.readyState;if(e)if(e!="complete")if(e!="loaded")return;try{Belco("init",belcoConfig)}catch(t){}};var r=e.getElementsByTagName(t)[0];r.parentNode.insertBefore(n,r)})(document,"script")</script>
