@@ -145,36 +145,36 @@ if(!class_exists('WP_Belco')) {
      * Initialize the Belco client widget
      */
 
-    public function init_widget() {
-      // Don't show if Woocommerce isn't activated.
-      if (!$this->connector)
-        return;
+     public function init_widget() {
+       // Don't show if Woocommerce isn't activated.
+       if (!$this->connector) {
+         return;
+       }
+       $secret = get_option('belco_secret');
+       $config = array(
+         'shopId' => get_option('belco_shop_id')
+       );
+       if(!is_user_logged_in()){
+         $data = $this->connector->get_identify_data($secret);
+         if(!empty($data)) {
+           if($secret) {
+             $config = array("hash" => hash_hmac("sha256", $data['email'], $secret));
+           }
+           $config = array_merge($config, $data);
+         }
+       } elseif (WP_Belco::user_role('customer')) {
+         $user = wp_get_current_user();
+         if($secret) {
+           $config = array("hash" => hash_hmac("sha256", $user->user_email, $secret));
+         }
+         $config = array_merge($config, $this->connector->get_customer($user->ID));
+       }
+       if ($cart = $this->connector->get_cart()) {
+         $config['cart'] = $cart;
+       }
 
-      $secret = get_option('belco_secret');
-      $config = array(
-        'shopId' => get_option('belco_shop_id')
-      );
-        if(!is_user_logged_in()){
-          $data = $this->connector->get_identify_data($secret);
-          if(!empty($data)) {
-            if($secret) {
-              $config = array("hash" => hash_hmac("sha256", $data['email'], $secret));
-            }
-            $config = array_merge($config, $data);
-          }
-        } elseif (WP_Belco::user_role('customer')) {
-          $user = wp_get_current_user();
-          if($secret) {
-            $config = array("hash" => hash_hmac("sha256", $user->user_email, $secret));
-          }
-          $config = array_merge($config, $this->connector->get_customer($user->ID));
-        }
-      if ($cart = $this->connector->get_cart()) {
-        $config['cart'] = $cart;
-      }
-
-      include(sprintf("%s/templates/widget.php", dirname(__FILE__)));
-    }
+       include(sprintf("%s/templates/widget.php", dirname(__FILE__)));
+     }
 
     /**
      * Settings page
