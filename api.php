@@ -8,6 +8,10 @@ class Belco_API {
 			$secret = get_option('belco_secret');
 		}
 
+		if (empty($secret)) {
+			return false;
+		}
+
 		$protocol = BELCO_USE_SSL ? 'https://' : 'http://';
 
 		$response = wp_remote_post($protocol . BELCO_API_HOST . $path, array(
