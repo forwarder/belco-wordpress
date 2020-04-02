@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 define('BELCO_HOST', 'app.belco.io');
-define('BELCO_API_HOST', '192.168.1.100:3500');
-define('BELCO_USE_SSL', false);
+define('BELCO_API_HOST', 'api.belco.io');
+define('BELCO_USE_SSL', true);
 
 if(!class_exists('WP_Belco')) {
 
