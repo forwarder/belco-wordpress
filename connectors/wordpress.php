@@ -13,7 +13,7 @@ class WordPressConnector {
       'id' => $shop_id,
       'type' => 'wordpress',
       'url' => get_site_url()
-    ), array('secret' => $secret));
+    ), array('secret' => $secret, 'blocking' => true));
   }
   
   public function get_identify_data($secret) {

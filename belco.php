@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.7.2
+ * @version 0.8.0
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.7.2
+Version: 0.8.0
 Author: Belco B.V.
 Author URI: http://www.belco.io
 License: GPLv2 or later
@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 define('BELCO_HOST', 'app.belco.io');
-define('BELCO_API_HOST', 'api.belco.io');
-define('BELCO_USE_SSL', true);
+define('BELCO_API_HOST', '192.168.1.100:3500');
+define('BELCO_USE_SSL', false);
 
 if(!class_exists('WP_Belco')) {
 
@@ -150,6 +150,7 @@ if(!class_exists('WP_Belco')) {
       if (!$this->connector) {
         return;
       }
+
       $shopId = get_option('belco_shop_id');
 
       if (!$shopId) {
@@ -165,14 +166,14 @@ if(!class_exists('WP_Belco')) {
         $data = $this->connector->get_identify_data($secret);
         if (!empty($data)) {
           if ($secret) {
-            $config = array("hash" => hash_hmac("sha256", $data['email'], $secret));
+            $config['hash'] = hash_hmac("sha256", $data['email'], $secret);
           }
           $config = array_merge($config, $data);
         }
       } elseif (WP_Belco::user_role('customer')) {
         $user = wp_get_current_user();
         if ($secret) {
-          $config = array("hash" => hash_hmac("sha256", $user->user_email, $secret));
+          $config['hash'] = hash_hmac("sha256", $user->user_email, $secret);
         }
         $config = array_merge($config, $this->connector->get_customer($user->ID));
       }
@@ -180,6 +181,10 @@ if(!class_exists('WP_Belco')) {
       if ($cart = $this->connector->get_cart()) {
         $config['cart'] = $cart;
       }
+
+      $events = $this->connector->get_event_data();
+
+      $this->connector->clear_event_data();
 
       include(sprintf("%s/templates/widget.php", dirname(__FILE__)));
     }
