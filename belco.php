@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.8.0
+ * @version 0.8.1
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.8.0
+Version: 0.8.1
 Author: Belco B.V.
 Author URI: http://www.belco.io
 License: GPLv2 or later

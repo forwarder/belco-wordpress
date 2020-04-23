@@ -5,7 +5,7 @@
 Belco.load(function() {
   Belco.init(<?php echo json_encode($config); ?>);
 
-  <?php foreach($this->events_queue as $event): ?>
+  <?php foreach($events as $event): ?>
     <?php if($event['method'] == 'track'): ?>
     Belco.track("<?php echo $event['event']; ?>", <?php echo json_encode($event['data']); ?>);
     <?php endif; ?>

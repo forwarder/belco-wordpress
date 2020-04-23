@@ -20,6 +20,10 @@ class WordPressConnector {
     return null;
   }
 
+  public function get_event_data($secret) {
+    return array();
+  }
+
   public function customer_updated($id) {
     $customer = $this->get_customer($id);
     if ($customer) {
