@@ -7,7 +7,7 @@ Belco.load(function() {
 
   <?php foreach($events as $event): ?>
     <?php if($event['type'] == 'track'): ?>
-    Belco.track("<?php echo $event['event']; ?>", <?php echo json_encode($event['data']); ?>);
+    Belco.track("<?php echo $event['event']; ?>", <?php echo json_encode($event['properties']); ?>);
     <?php endif; ?>
   <?php endforeach; ?>
 });
