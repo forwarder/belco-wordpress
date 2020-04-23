@@ -4,7 +4,7 @@ Donate link: https://belco.io
 Tags: ecommerce, woocommerce, live-chat, email, telephony, customer support, crm
 Requires at least: 3.9.1
 Tested up to: 5.4
-Stable tag: 0.8.1
+Stable tag: 0.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,9 @@ You can sign up for a 14 day free trial at https://app.belco.io/signup
 1. Customer card, instantly see all customer information when you receive or make a call.
 
 == Changelog ==
+
+= 0.8.2
+- Changed event type handler name
 
 = 0.8.1
 - Update event tracking variable
