@@ -1,6 +1,14 @@
-<script>!function(a,b){var c=[],d=window.belcoFunction||"Belco";window[d]||(window[d]=function(a){if(void 0===window[d][a])throw new Error("Unknown method");return window[d][a].apply(window[d],Array.prototype.slice.call(arguments,1))});for(var e=["init","sync","track","page","open","close","toggle","on","once","off","anonymousId","customer","reset","sendMessage"],f=function(a){return function(){var b=Array.prototype.slice.call(arguments);return b.unshift(a),c.push(b),window[d]}},g=0;g<e.length;g++){var h=e[g];window[d][h]=f(h)}function i(){while(c.length>0){var a=c.shift();try{window[d].apply(window[d],a)}catch(b){console.error(b)}}}window[d].load=function(c){if(!a.getElementById("belco-js")){var d=a.createElement(b);d.async=!0,d.id="belco-js",d.type="text/javascript",d.src=("https:"===a.location.protocol?"https://":"http://")+"cdn.belco.io/widget.min.js",d.onload=d.onreadystatechange=function(a){var b=this.readyState;b&&"complete"!=b&&"loaded"!=b||("function"==typeof c&&c(a),i())};var e=a.getElementsByTagName(b)[0];e.parentNode.insertBefore(d,e)}},window.belcoConfig&&window[d].load(function(){window[d]("init",window.belcoConfig)})}(document,"script");</script>
+<script>
+!function(n,o){var e=window.belcoFunction||"Belco";window[e]||(window[e]=function(n){if(void 0===window[e][n])throw new Error("Unknown method");return window[e][n].apply(window[e],Array.prototype.slice.call(arguments,1))}),window[e]._q=[];for(var i=["init","sync","track","page","open","close","toggle","on","once","off","anonymousId","customer","reset","sendMessage"],t=function(n){return function(){var o=Array.prototype.slice.call(arguments);return o.unshift(n),window[e]._q.push(o),window[e]}},w=0;w<i.length;w++){var r=i[w];window[e][r]=t(r)}window[e].load=function(e){if(!n.getElementById("belco-js")){var i=n.createElement(o);i.async=!0,i.id="belco-js",i.type="text/javascript",i.src="//cdn.belco.io/v2/widget.js",i.onload=function(n){"function"==typeof e&&e(n)};var t=n.getElementsByTagName(o)[0];t.parentNode.insertBefore(i,t)}},window.belcoConfig&&window[e].load(function(){window[e]("init",window.belcoConfig)})}(document,"script");
+</script>
 <script>
 Belco.load(function() {
   Belco.init(<?php echo json_encode($config); ?>);
+
+  <?php foreach($this->events_queue as $event): ?>
+    <?php if($event['method'] == 'track'): ?>
+    Belco.track("<?php echo $event['event']; ?>", <?php echo json_encode($event['data']); ?>);
+    <?php endif; ?>
+  <?php endforeach; ?>
 });
 </script>

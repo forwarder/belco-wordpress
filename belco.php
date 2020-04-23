@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.7.2
+ * @version 0.8.0
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.7.2
+Version: 0.8.0
 Author: Belco B.V.
 Author URI: http://www.belco.io
 License: GPLv2 or later
@@ -150,6 +150,7 @@ if(!class_exists('WP_Belco')) {
       if (!$this->connector) {
         return;
       }
+
       $shopId = get_option('belco_shop_id');
 
       if (!$shopId) {
@@ -180,6 +181,10 @@ if(!class_exists('WP_Belco')) {
       if ($cart = $this->connector->get_cart()) {
         $config['cart'] = $cart;
       }
+
+      $events = $this->connector->get_event_data();
+
+      $this->connector->clear_event_data();
 
       include(sprintf("%s/templates/widget.php", dirname(__FILE__)));
     }

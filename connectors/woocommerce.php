@@ -7,7 +7,8 @@ class WooCommerceConnector {
     // init hooks etc
     $this->wc = WooCommerce::instance();
 
-    add_action('woocommerce_checkout_order_processed', array($this, 'order_completed'));
+    add_action('woocommerce_checkout_order_processed', array($this, 'order_completed'), 10);
+    add_action('woocommerce_order_status_changed', array($this, 'order_status_changed'), 10, 3);
     add_action('profile_update', array($this, 'customer_updated'));
     add_action('deleted_user', array($this, 'customer_deleted'));
 
@@ -19,7 +20,7 @@ class WooCommerceConnector {
       'id' => $shop_id,
       'type' => 'woocommerce',
       'url' => get_site_url()
-    ), array('secret' => $secret));
+    ), array('secret' => $secret, 'blocking' => true));
   }
 
   public function get_identify_data($secret) {
@@ -27,8 +28,34 @@ class WooCommerceConnector {
     if(!is_null($data)) {
       return $data;
     } else {
-      return [];
+      return array();
     }
+  }
+
+  public function clear_session_data(){
+    $this->wc->session->set('belco_event_data', json_encode(array()));
+    $this->wc->session->set('belco_identify_data', json_encode(array()));
+  }
+
+  public function clear_event_data(){
+    $this->wc->session->set('belco_event_data', json_encode(array()));
+  }
+
+  public function track_event($data){
+    $events = $this->get_event_data();
+    if(empty($events)) $events = array();
+    array_push($events, $data);
+    $this->wc->session->set('belco_event_data', json_encode($events));
+  }
+
+  public function get_event_data(){
+    $events = array();
+    $data = $this->wc->session->get('belco_event_data');
+    if(!empty($data)){
+      if(get_magic_quotes_gpc()) $data = stripslashes($data);
+      $events = json_decode($data, true);
+    }
+    return $events;
   }
 
   public function order_completed($id) {
@@ -36,6 +63,49 @@ class WooCommerceConnector {
     $customer = $this->get_customer_from_order($order);
     if ($customer) {
       $this->wc->session->set( 'belco_identify_data' , $customer );
+    }
+
+    $this->track_event(array(
+      'type' => 'track',
+      'event' => 'Order Completed',
+      'properties' => array(
+        'orderId' => $order->get_order_number(),
+        'date' => $order->get_date_created()->getTimestamp(),
+        'total' => $order->get_total(),
+        'status' => $order->get_status()
+      )
+    ));
+  }
+
+  public function order_status_changed($id, $old_status = false, $new_status = false) {
+    $order = new WC_Order($id);
+    $customer = $this->get_customer_from_order($order);
+
+    $eventName = null;
+    $event = null;
+    switch ($new_status) {
+      case 'completed':
+        $eventName = 'Order Completed';
+      case 'cancelled':
+      case 'failed':
+        $eventName = 'Order Cancelled';
+      case 'refunded':
+        $eventName = 'Order Refunded';
+    }
+
+    if ($eventName) {
+      Belco_API::post('/v1/t', array(
+        'type' => 'track',
+        'event' => $eventName,
+        'identity' => $customer,
+        'sentAt' => $order->get_date_created()->getTimestamp(),
+        'properties' => array(
+          'orderId' => $order->get_order_number(),
+          'date' => $order->get_date_created()->getTimestamp(),
+          'total' => $order->get_total(),
+          'status' => $new_status
+        )
+      ));
     }
   }
 
