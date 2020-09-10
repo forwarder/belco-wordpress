@@ -12,7 +12,7 @@ class WooCommerceConnector {
     add_action('profile_update', array($this, 'customer_updated'));
     add_action('deleted_user', array($this, 'customer_deleted'));
 
-    add_filter('woocommerce_api_query_args', array($this, 'api_order_search_custom_fields'), 20, 2);
+    add_filter('woocommerce_rest_orders_prepare_object_query', array($this, 'api_order_search_custom_fields'), 20, 2);
   }
 
   public function connect($shop_id, $secret) {
@@ -122,10 +122,12 @@ class WooCommerceConnector {
     }
   }
 
-  public function api_order_search_custom_fields($args, $request_args) {
+  public function api_order_search_custom_fields($args, $request) {
     global $wpdb;
 
-		if ( empty( $request_args['email'] ) ) {
+    $email = $request->get_param('email');
+
+		if ( !$email ) {
 			return $args;
 		}
 
@@ -138,7 +140,7 @@ class WooCommerceConnector {
 				WHERE
 					( p1.meta_key = '_billing_email' AND p1.meta_value LIKE '%%%s%%' )
 				",
-				esc_attr( $request_args['email'] )
+				esc_attr( $email )
 			)
 		);
 
