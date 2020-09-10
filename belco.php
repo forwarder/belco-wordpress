@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Belco
- * @version 0.8.3
+ * @version 0.9.0
  *
  */
 /*
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.8.3
+Version: 0.9.0
 Author: Belco B.V.
 Author URI: http://www.belco.io
 License: GPLv2 or later
@@ -50,8 +50,10 @@ if(!class_exists('WP_Belco')) {
       add_action( 'init', array(&$this, 'init') );
       add_action( 'admin_init', array(&$this, 'admin_init') );
       add_action( 'admin_menu', array(&$this, 'add_menu') );
-      add_action( 'plugins_loaded', array(&$this, 'enqueue_scripts') );
+      add_action( 'wp_enqueue_scripts', array(&$this, 'enqueue_scripts') );
       add_action( 'admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts') );
+      add_action( 'wp_ajax_belco_config', array(&$this, 'belco_config_handler') );
+      add_action( 'wp_ajax_nopriv_belco_config_handler' , array(&$this, 'belco_config_handler'));
     }
 
     /**
@@ -113,7 +115,13 @@ if(!class_exists('WP_Belco')) {
 
     public function enqueue_scripts() {
       if (!is_user_logged_in() || WP_Belco::user_role('customer')) {
-        add_action('wp_footer', array(&$this, 'init_widget'));
+        // add_action('wp_footer', array(&$this, 'init_widget'));
+        wp_enqueue_script( 'frontend-ajax', plugins_url('js/init.js', __FILE__), array('jquery'), null, true );
+        wp_localize_script( 'frontend-ajax', 'frontend_ajax_object',
+          array( 
+            'ajaxurl' => admin_url( 'admin-ajax.php' )
+          )
+        );
       }
     }
 
@@ -141,20 +149,16 @@ if(!class_exists('WP_Belco')) {
       add_menu_page('Belco settings', 'Belco', 'manage_options', 'belco', array(&$this, 'settings_page'), null, 58);
     }
 
-    /**
-     * Initialize the Belco client widget
-     */
-
-    public function init_widget() {
+    public function belco_config_handler() {
       // Don't show if Woocommerce isn't activated.
       if (!$this->connector) {
-        return;
+        return wp_send_json_error(array('error' => 'WooCommerce not enabled'));
       }
 
       $shopId = get_option('belco_shop_id');
 
       if (!$shopId) {
-        return;
+        return wp_send_json_error(array('error' => 'Shop id not configured'));
       }
 
       $secret = get_option('belco_secret');
@@ -184,9 +188,10 @@ if(!class_exists('WP_Belco')) {
 
       $events = $this->connector->get_event_data();
 
-      $this->connector->clear_event_data();
-
-      include(sprintf("%s/templates/widget.php", dirname(__FILE__)));
+      return wp_send_json_success(array(
+        'config' => $config,
+        'events' => $events
+      ));
     }
 
     /**
