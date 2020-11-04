@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Belco
- * @version 0.9.1
+ * @version 0.9.2
  *
  */
 /*
@@ -52,7 +52,7 @@ if(!class_exists('WP_Belco')) {
       add_action( 'admin_menu', array(&$this, 'add_menu') );
       add_action( 'wp_enqueue_scripts', array(&$this, 'enqueue_scripts') );
       add_action( 'admin_enqueue_scripts', array(&$this, 'admin_enqueue_scripts') );
-      add_action( 'wp_ajax_belco_config', array(&$this, 'belco_config_handler') );
+      add_action( 'wp_ajax_belco_config_handler', array(&$this, 'belco_config_handler') );
       add_action( 'wp_ajax_nopriv_belco_config_handler' , array(&$this, 'belco_config_handler'));
     }
 
