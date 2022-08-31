@@ -3,8 +3,8 @@ Contributors: belco
 Donate link: https://belco.io
 Tags: ecommerce, woocommerce, live-chat, email, telephony, customer support, crm
 Requires at least: 3.9.1
-Tested up to: 5.5
-Stable tag: 0.9.3
+Tested up to: 6.0.1
+Stable tag: 0.9.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,40 +45,43 @@ You can sign up for a 14 day free trial at https://app.belco.io/signup
 
 == Changelog ==
 
-= 0.9.3
+= 0.9.4 =
+- Wordpress 6.0.1 + PHP 8.1 + WooCommerce 6.8.2
+
+= 0.9.3 =
 - WordPress 5.5
 
-= 0.9.2
+= 0.9.2 =
 - Fix issue with logged in users
 
-= 0.9.1
+= 0.9.1 =
 - WooCommerce Api v3 support for Belco
 - Add email parameter to orders endpoint
 
-= 0.9.0
+= 0.9.0 =
 - Load config with AJAX in order to bypass page caching
 
-= 0.8.3
+= 0.8.3 =
 - Add event properties
 
-= 0.8.2
+= 0.8.2 =
 - Changed event type handler name
 
-= 0.8.1
+= 0.8.1 =
 - Update event tracking variable
 
-= 0.8.0
+= 0.8.0 =
 - Tested up to WP 5.4 and WooCommerce 3.8.1
 - Improved API request handling
 - Added basic event tracking
 
-= 0.7.2
+= 0.7.2 =
 - Tested up to WP 5.3 and WooCommerce 3.8.1
 
-= 0.7.1
+= 0.7.1 =
 - Add shopId to anonymous order config
 
-= 0.7.0
+= 0.7.0 =
 - Add new widget init code
 - Sync WooCommerce orders through JS api
 

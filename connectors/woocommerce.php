@@ -52,7 +52,6 @@ class WooCommerceConnector {
     $events = array();
     $data = $this->wc->session->get('belco_event_data');
     if(!empty($data)){
-      if(get_magic_quotes_gpc()) $data = stripslashes($data);
       $events = json_decode($data, true);
     }
     return $events;
