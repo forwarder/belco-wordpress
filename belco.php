@@ -8,7 +8,7 @@
 Plugin Name: Belco.io
 Plugin URI: http://www.belco.io
 Description: All-in-one customer service software for e-commerce
-Version: 0.9.3
+Version: 0.9.4
 Author: Belco B.V.
 Author URI: http://www.belco.io
 License: GPLv2 or later
@@ -118,7 +118,7 @@ if(!class_exists('WP_Belco')) {
         // add_action('wp_footer', array(&$this, 'init_widget'));
         wp_enqueue_script( 'frontend-ajax', plugins_url('js/init.js', __FILE__), array('jquery'), null, true );
         wp_localize_script( 'frontend-ajax', 'frontend_ajax_object',
-          array( 
+          array(
             'ajaxurl' => admin_url( 'admin-ajax.php' )
           )
         );
