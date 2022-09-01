@@ -3,6 +3,7 @@ Contributors: belco
 Donate link: https://belco.io
 Tags: ecommerce, woocommerce, live-chat, email, telephony, customer support, crm
 Requires at least: 3.9.1
+Requires PHP: 7.4
 Tested up to: 6.0.1
 Stable tag: 0.9.4
 License: GPLv2 or later
